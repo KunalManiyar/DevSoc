@@ -3,7 +3,8 @@ import React from 'react';
 const Landing = () =>{
 
     return(
-        <section className="landing">
+      <>
+    <nav className="landing">
       <div className="dark-overlay">
         <div className="landing-inner">
           <h1 className="x-large">Developer Society</h1>
@@ -12,12 +13,14 @@ const Landing = () =>{
             other developers
           </p>
           <div className="buttons">
-            <a href="register.html" className="btn btn-primary">Sign Up</a>
-            <a href="login.html" className="btn btn-light">Login</a>
+            <a href='/register' className="btn btn-primary">Sign Up</a>
+            <a href='/login' className="btn btn-light">Login</a>
           </div>
         </div>
       </div>
-    </section>
+    </nav>
+    </>
+    
     )
 }
-export default Landing
+export default Landing;
