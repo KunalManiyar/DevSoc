@@ -8,7 +8,7 @@ const Register = () => {
     passowrd: '',
     password2: ''
   });
-  //const { name, email, password, password2 }= formData;
+  //const {name, email, password, password2 }= formData;
   //const onChange = e => setFormData({...formData, [e.target.name]: e.target.value });
   return <Fragment>
       <h1 className="large text-primary">Sign Up</h1>
