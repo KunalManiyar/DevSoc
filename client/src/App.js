@@ -1,5 +1,5 @@
 import React, { Fragment, useState} from 'react';
-import { BrowserRouter as Router, Route, Routes  } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Landing from './components/layout/Landing';
 import Register from './components/auth/Register';
@@ -27,10 +27,21 @@ import './App.css';
 //   </div>
 // };
 const App = ()=> (
-  <Fragment>
-    <Navbar />
-    <Register />
-  </Fragment>
+
+  <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="register" element={<Register/>} />
+        <Route path="login" element={<Login/>} />
+        
+      </Routes>
+    </Router>
+  
+  // <Fragment>
+    
+  //   <Register />
+  // </Fragment>
   
 )
 export default App;
