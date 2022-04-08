@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link, Navigate } from 'react-router-dom';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import React from "react";
+import { Link, Navigate } from "react-router-dom";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
 
 const Landing = ({ isAuthenticated }) => {
   if (isAuthenticated) {
@@ -12,11 +12,8 @@ const Landing = ({ isAuthenticated }) => {
     <section className="landing">
       <div className="dark-overlay">
         <div className="landing-inner">
-          <h1 className="x-large">Connecting Developers</h1>
-          <p className="lead">
-            Create a developer profile/portfolio, share posts and get help from
-            other developers
-          </p>
+          <h1 className="x-large">DevSoc</h1>
+          <p className="lead">Connecting Developers</p>
           <div className="buttons">
             <Link to="/register" className="btn btn-primary">
               Sign Up
@@ -32,11 +29,11 @@ const Landing = ({ isAuthenticated }) => {
 };
 
 Landing.propTypes = {
-  isAuthenticated: PropTypes.bool
+  isAuthenticated: PropTypes.bool,
 };
 
 const mapStateToProps = (state) => ({
-  isAuthenticated: state.auth.isAuthenticated
+  isAuthenticated: state.auth.isAuthenticated,
 });
 
 export default connect(mapStateToProps)(Landing);
