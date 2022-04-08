@@ -1,16 +1,19 @@
 const express = require("express");
-const connectDB = require("./config/db");
+// const connectDB = require("./config/db");
+const { connectDatabase } = require("./config/db");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const app = express();
-
-connectDB();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config({ path: "./config/config.env" });
+}
+connectDatabase();
 
 // Init Middleware
 app.use(express.json());
 
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.get("/", (req, res) => res.send("API Running"));
 
