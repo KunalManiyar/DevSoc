@@ -1,6 +1,7 @@
 
 from bson import json_util
 import json
+
 import pymongo
 from flask import Flask
 from flask import request
@@ -35,70 +36,84 @@ def get():
         response.append(document)
 
     # Here response is available in the form of list
-    id=[]
-    cosine=[]
-    df=pd.DataFrame()
-    dict={}
-    def listToString(s): 
-        
+    # print((json.loads(response)[0]['user']['$oid']))
+
+    id2 = []
+    cosine = []
+    df = pd.DataFrame()
+    dict = {}
+
+    def listToString(s):
+
         # initialize an empty string
-        str1 = " " 
-        
-        # return string  
+        str1 = " "
+
+        # return string
         return (str1.join(s))
 
     def model(data):
-        global id
-        id=[]
-        skills=[]
-        experience=[]
-        education=[]
+        global id2
+        id2 = []
+        skills = []
+        experience = []
+        education = []
+
+        # print(type(json.loads(response)[0]['user']['$oid']))
         for i in data:
-            id.append(i["user"]["$oid"])
+            # i['user'] = json.loads(response)[0]['user']['$oid']
+
+            id2.append(json.loads(response)[0]['user']['$oid'])
             skills.append(listToString(i["skills"]))
             experience.append(listToString(i["experience"]))
             education.append(listToString(i["education"]))
         # print(education)
 
         global dict
-        dict={"id":id,"skills":skills,"experience":experience,"education":education}
+        dict = {"id2": id2, "skills": skills,
+                "experience": experience, "education": education}
         # global df
         df = pd.DataFrame(dict)
         df['SkillString'] = df['skills'].str.replace(',', '')
         df['ExperienceString'] = df['experience'].str.replace(',', '')
-        df["combined_text"] = df["SkillString"] + " " + df["ExperienceString"] + " " + df["education"] + " " + df["SkillString"]
-        tf = TfidfVectorizer(analyzer = "word", ngram_range=(1,2), min_df=0, stop_words='english')
+        df["combined_text"] = df["SkillString"] + " " + \
+            df["ExperienceString"] + " " + \
+            df["education"] + " " + df["SkillString"]
+        tf = TfidfVectorizer(analyzer="word", ngram_range=(
+            1, 2), min_df=0, stop_words='english')
 
         #tfidf_matrix = tf.fit_transform(df['combined_text'])
         tfidf_matrix = tf.fit_transform(df['combined_text'].values.astype('U'))
         global cosine
-        cosine =  cosine_similarity(tfidf_matrix, tfidf_matrix)
-
-
-
-
+        cosine = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
     def get_recommendations(id1):
-        global id
+        id1 = str()
+        global id2
         global cosine
         global dict
-        df=pd.DataFrame(dict)
-        final=[]
-        index = id.index(id1)
+        df = pd.DataFrame(dict)
+        final = []
+        index = id2.index(id1)
         # print(index)
         similar_Devs = list(enumerate(cosine[index]))
-        sortedDevs = sorted(similar_Devs, key = lambda x:x[1], reverse=True)
+        sortedDevs = sorted(similar_Devs, key=lambda x: x[1], reverse=True)
         for i in range(len(sortedDevs)):
-            if(sortedDevs[i][0]==index):
+            if(sortedDevs[i][0] == index):
                 del sortedDevs[i]
                 break
-        for i in range (len(sortedDevs)):
-            final.append([df.iloc[[sortedDevs[i][0]]].values.tolist()[0][0],sortedDevs[i][1]])  
+        for i in range(len(sortedDevs)):
+            final.append([df.iloc[[sortedDevs[i][0]]].values.tolist()[
+                         0][0], sortedDevs[i][1]])
         print(final)
-    print(response)
+
+    model(response)
+
+    # print(response)
+    get_recommendations('621bada2a6dfc40e82a90d7f')
 
     response = json_util.dumps(response)
     # Here response is available in the form of string
+    print(type(json.loads(response)[0]['user']['$oid']))
 
     return response
 
