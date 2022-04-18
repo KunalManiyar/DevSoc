@@ -36,7 +36,7 @@ def get():
         response.append(document)
 
     # Here response is available in the form of list
-    # print((json.loads(response)[0]['user']['$oid']))
+    # print(type(json.loads(json_util.dumps(response))[0]['user']['$oid']))
 
     id2 = []
     cosine = []
@@ -61,8 +61,11 @@ def get():
         # print(type(json.loads(response)[0]['user']['$oid']))
         for i in data:
             # i['user'] = json.loads(response)[0]['user']['$oid']
-
-            id2.append(json.loads(response)[0]['user']['$oid'])
+            # print(i)
+            # print(json.loads(json_util.dumps(i))
+            #       ['user']['$oid'])
+            id2.append(json.loads(json_util.dumps(i))
+                       ['user']['$oid'])
             skills.append(listToString(i["skills"]))
             experience.append(listToString(i["experience"]))
             education.append(listToString(i["education"]))
@@ -106,14 +109,13 @@ def get():
                          0][0], sortedDevs[i][1]])
         print(final)
 
-    model(response)
+    # model(response)
 
     # print(response)
-    get_recommendations('621bada2a6dfc40e82a90d7f')
+    # get_recommendations('621bada2a6dfc40e82a90d7f')
 
     response = json_util.dumps(response)
     # Here response is available in the form of string
-    print(type(json.loads(response)[0]['user']['$oid']))
 
     return response
 
