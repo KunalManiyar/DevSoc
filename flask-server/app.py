@@ -62,12 +62,18 @@ def get():
         for i in data:
             # i['user'] = json.loads(response)[0]['user']['$oid']
             # print(i)
-            # print(json.loads(json_util.dumps(i))
-            #       ['user']['$oid'])
+            print(json.loads(json_util.dumps(i))
+                  ['user']['$oid'])
+            
             id2.append(json.loads(json_util.dumps(i))
                        ['user']['$oid'])
+           
             skills.append(listToString(i["skills"]))
-            experience.append(listToString(i["experience"]))
+            # print(i["experience"])
+            if(i["experience"]):
+                experience.append(listToString(i["experience"][0]["title"]))
+            else:
+                experience.append(" ")
             education.append(listToString(i["education"]))
         # print(education)
 
@@ -90,10 +96,11 @@ def get():
         cosine = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
     def get_recommendations(id1):
-        id1 = str()
+        # id1 = str()
         global id2
         global cosine
         global dict
+        # print(dict)
         df = pd.DataFrame(dict)
         final = []
         index = id2.index(id1)
@@ -105,14 +112,14 @@ def get():
                 del sortedDevs[i]
                 break
         for i in range(len(sortedDevs)):
-            final.append([df.iloc[[sortedDevs[i][0]]].values.tolist()[
-                         0][0], sortedDevs[i][1]])
+            final.append(df.iloc[[sortedDevs[i][0]]].values.tolist()[
+                         0][0])
         print(final)
 
-    # model(response)
+    model(response)
 
     # print(response)
-    # get_recommendations('621bada2a6dfc40e82a90d7f')
+    get_recommendations('6218d7942a44b643b22b8c6c')
 
     response = json_util.dumps(response)
     # Here response is available in the form of string
