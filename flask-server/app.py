@@ -1,7 +1,7 @@
-
 from bson import json_util
 import json
-
+import sys
+import requests
 import pymongo
 from flask import Flask
 from flask import request
@@ -12,13 +12,15 @@ import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.corpus import stopwords
+
+
 app = Flask(__name__)
 
 client = pymongo.MongoClient(
     "mongodb+srv://bob123:bob123@devsoc.i73yb.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 db = client['myFirstDatabase']
 collection = db['profiles']
-
+userId = None
 
 # @app.route("/", methods=['POST'])
 # def insert_document():
@@ -27,8 +29,20 @@ collection = db['profiles']
 #     return ('', 204)
 
 
+@app.route('/test/<string:userProfileId>', methods=["POST"])
+def test(userProfileId):
+    global userId
+    print("Hello")
+    userId = json.loads(userProfileId)
+    print(type(userId))
+    print(userId)
+    return json_util.dumps(userProfileId)
+
+
 @app.route('/flask')
 def get():
+    global userId
+
     documents = collection.find({})
     response = []
     for document in documents:
@@ -62,12 +76,12 @@ def get():
         for i in data:
             # i['user'] = json.loads(response)[0]['user']['$oid']
             # print(i)
-            print(json.loads(json_util.dumps(i))
-                  ['user']['$oid'])
-            
+            # print(json.loads(json_util.dumps(i))
+            #       ['user']['$oid'])
+
             id2.append(json.loads(json_util.dumps(i))
-                       ['user']['$oid'])
-           
+                       ['_id']['$oid'])
+
             skills.append(listToString(i["skills"]))
             # print(i["experience"])
             if(i["experience"]):
@@ -114,13 +128,13 @@ def get():
         for i in range(len(sortedDevs)):
             final.append(df.iloc[[sortedDevs[i][0]]].values.tolist()[
                          0][0])
-        print(final)
+        return final
 
     model(response)
 
     # print(response)
-    get_recommendations('6218d7942a44b643b22b8c6c')
-
+    response = get_recommendations(userId)
+    # print(response)
     response = json_util.dumps(response)
     # Here response is available in the form of string
 

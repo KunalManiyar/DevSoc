@@ -3,6 +3,11 @@ const axios = require("axios");
 const config = require("config");
 const router = express.Router();
 const auth = require("../../middleware/auth");
+const auth1 = require("../../middleware/auth1");
+const auth2 = require("../../middleware/auth2");
+const request = require("request");
+var XMLHttpRequest = require("xhr2");
+
 const { check, validationResult } = require("express-validator");
 // bring in normalize to give us a proper url, regardless of what user entered
 const normalize = require("normalize-url");
@@ -31,6 +36,23 @@ router.get("/me", auth, async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
+// router.get("/loggedInUserProfileId", auth2, async (req, res) => {
+//   try {
+//     const profile = await Profile.findOne({
+//       user: req.user.id,
+//     }).populate("user", ["name", "avatar"]);
+
+//     if (!profile) {
+//       return res.status(400).json({ msg: "There is no profile for this user" });
+//     }
+
+//     res.json(profile);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send("Server Error");
+//   }
+// });
 
 // @route    POST api/profile
 // @desc     Create or update user profile
@@ -101,10 +123,38 @@ router.post(
 // @route    GET api/profile
 // @desc     Get all profiles
 // @access   Public
-router.get("/", async (req, res) => {
+router.get("/", auth1, async (req, res) => {
+  const userId = req.user.id;
+  var userProfileId = await Profile.find({ user: userId }, { _id: 1 });
+  userProfileId = userProfileId[0]["_id"];
+
+  console.log("get all profile");
+  console.log(userProfileId);
   try {
-    const profiles = await Profile.find().populate("user", ["name", "avatar"]);
-    res.json(profiles);
+    const requ = new XMLHttpRequest();
+    requ.open(
+      "POST",
+      `http://127.0.0.1:8000/test/${JSON.stringify(userProfileId)}`
+    );
+    requ.onload = () => {
+      const flaskMessage = requ.responseText;
+    };
+    requ.send();
+
+    request("http://127.0.0.1:8000/flask", async (error, response, body) => {
+      body = JSON.parse(body);
+      console.log(body);
+      const profiles = [];
+      var profile;
+      for (let i = 0; i < body.length; i++) {
+        profile = await Profile.find({
+          _id: body[i],
+        }).populate("user", ["name", "avatar"]);
+        profiles.push(profile[0]);
+      }
+      if (!profiles) return res.status(400).json({ msg: "Profile not found" });
+      res.json(profiles); //Display the response on the website
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
@@ -301,6 +351,5 @@ router.post("/upvote/:id", auth, checkObjectId("id"), async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
-
 
 module.exports = router;

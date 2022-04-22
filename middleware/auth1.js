@@ -1,26 +1,29 @@
 const jwt = require("jsonwebtoken");
 const config = require("config");
+const Profile = require("../models/Profile");
 
-module.exports = function (req, res, next) {
+module.exports = async (req, res, next) => {
   // Get token from header
+  const profiles = await Profile.find().populate("user", ["name", "avatar"]);
   const token = req.header("x-auth-token");
-  console.log("In auth");
+  console.log("In auth1");
   console.log(token);
-  console.log("Out auth");
+  console.log("Out of auth1");
+
   // Check if not token
   if (!token) {
-    return res.status(401).json({ msg: "No token, authorization denied" });
+    return res.json(profiles);
   }
 
   // Verify token
   try {
     jwt.verify(token, config.get("jwtSecret"), (error, decoded) => {
       if (error) {
-        return res.status(401).json({ msg: "Token is not valid" });
+        return res.json(profiles);
       } else {
         req.user = decoded.user;
         console.log(req.user);
-        console.log("Out auth");
+        console.log("Out of auth1");
         next();
       }
     });

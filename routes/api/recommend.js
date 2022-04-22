@@ -14,12 +14,10 @@ const Profile = require("../../models/Profile");
 
 router.get("/home", (req, res) => {
   request("http://127.0.0.1:8000/flask", async (error, response, body) => {
-    console.error("error:", error); // Print the error
-    console.log("statusCode:", response && response.statusCode); // Print the response status code if a response was received
     body = JSON.parse(body);
-    // console.log(body);
-    id = ["621bada2a6dfc40e82a90d7f", "622da49aa68d77cb5107a8d9"];
+    console.log(body);
     try {
+      id = body;
       const profiles = await Profile.find({
         _id: id,
       }).populate("user", ["name", "avatar"]);
