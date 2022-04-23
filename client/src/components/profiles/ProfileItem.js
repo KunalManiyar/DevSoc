@@ -1,11 +1,14 @@
-import React from "react";
+import { React, useEffect } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { upvote, downvote } from "../../actions/profile";
+
+import { upvote, downvote, getProfiles } from "../../actions/profile";
+
 const ProfileItem = ({
   upvote,
   downvote,
+  profileId,
   profile: {
     user: { _id, name, avatar },
     status,
@@ -13,10 +16,13 @@ const ProfileItem = ({
     location,
     skills,
     totalVotes,
-    id = _id,
   },
+  showActions,
 }) => {
-  console.log(id);
+  useEffect(() => {
+    getProfiles();
+  }, [upvote, downvote]);
+  console.log(profileId);
   return (
     <div className="profile bg-light">
       <img src={avatar} alt="" className="round-img" />
@@ -29,23 +35,24 @@ const ProfileItem = ({
         <Link to={`/profile/${_id}`} className="btn btn-primary">
           View Profile
         </Link>
-
-        <>
-          <button
-            onClick={() => upvote(id)}
-            type="button"
-            className="btn btn-light"
-          >
-            <i className="fas fa-thumbs-up" /> <span>{totalVotes}</span>
-          </button>
-          <button
-            onClick={() => downvote(id)}
-            type="button"
-            className="btn btn-light"
-          >
-            <i className="fas fa-thumbs-down" />
-          </button>
-        </>
+        {showActions && (
+          <>
+            <button
+              onClick={() => upvote(profileId)}
+              type="button"
+              className="btn btn-light"
+            >
+              <i className="fas fa-thumbs-up" /> <span>{totalVotes}</span>
+            </button>
+            <button
+              onClick={() => downvote(profileId)}
+              type="button"
+              className="btn btn-light"
+            >
+              <i className="fas fa-thumbs-down" />
+            </button>
+          </>
+        )}
       </div>
 
       <ul>
@@ -58,11 +65,16 @@ const ProfileItem = ({
     </div>
   );
 };
-
+ProfileItem.defaultProps = {
+  showActions: true,
+};
 ProfileItem.propTypes = {
+  profileId: PropTypes.string.isRequired,
   profile: PropTypes.object.isRequired,
   upvote: PropTypes.func.isRequired,
   downvote: PropTypes.func.isRequired,
+  showActions: PropTypes.bool,
+  auth: PropTypes.object.isRequired,
 };
 const mapStateToProps = (state) => ({
   auth: state.auth,

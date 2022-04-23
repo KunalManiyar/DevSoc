@@ -1,4 +1,5 @@
 import api from "../utils/api";
+import axios from "axios";
 import { setAlert } from "./alert";
 
 import {
@@ -237,6 +238,7 @@ export const deleteAccount = () => async (dispatch) => {
 // Upvotes
 export const upvote = (id) => async (dispatch) => {
   try {
+    console.log(id);
     const res = await api.put(`/profile/upvote/${id}`);
     console.log(res.data);
     dispatch({
@@ -254,9 +256,8 @@ export const upvote = (id) => async (dispatch) => {
 //  Downvotes
 export const downvote = (id) => async (dispatch) => {
   try {
-    console.log(id);
     const res = await api.put(`/profile/downvote/${id}`);
-    console.log(res.data);
+
     dispatch({
       type: UPDATE_VOTES,
       payload: { id, profile: res.data },

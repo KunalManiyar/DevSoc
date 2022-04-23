@@ -141,6 +141,7 @@ router.get("/", auth1, async (req, res) => {
 
     request("http://127.0.0.1:8000/flask", async (error, response, body) => {
       body = JSON.parse(body);
+
       const profiles = [];
       var profile;
       for (let i = 0; i < body.length; i++) {
@@ -369,7 +370,7 @@ router.put("/downvote/:id", auth, checkObjectId("id"), async (req, res) => {
     // if (req.params.id === req.user.id) {
     // }
     // Check if the user has already downvoted
-    console.log(req.params.id);
+
     if (
       profile.downvotes.some(
         (downvote) => downvote.user.toString() === req.user.id
