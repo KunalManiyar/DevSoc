@@ -28,11 +28,18 @@ const ProfileSchema = new mongoose.Schema({
   githubusername: {
     type: String,
   },
-  totalUpvotes: {
+  totalVotes: {
     type: Number,
     default: 0,
   },
   upvotes: [
+    {
+      user: {
+        type: Schema.Types.ObjectId,
+      },
+    },
+  ],
+  downvotes: [
     {
       user: {
         type: Schema.Types.ObjectId,

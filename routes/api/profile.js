@@ -128,8 +128,6 @@ router.get("/", auth1, async (req, res) => {
   var userProfileId = await Profile.find({ user: userId }, { _id: 1 });
   userProfileId = userProfileId[0]["_id"];
 
-  console.log("get all profile");
-  console.log(userProfileId);
   try {
     const requ = new XMLHttpRequest();
     requ.open(
@@ -143,7 +141,6 @@ router.get("/", auth1, async (req, res) => {
 
     request("http://127.0.0.1:8000/flask", async (error, response, body) => {
       body = JSON.parse(body);
-      console.log(body);
       const profiles = [];
       var profile;
       for (let i = 0; i < body.length; i++) {
@@ -328,28 +325,80 @@ router.get("/github/:username", async (req, res) => {
   }
 });
 
-router.post("/upvote/:id", auth, checkObjectId("id"), async (req, res) => {
+router.put("/upvote/:id", auth, checkObjectId("id"), async (req, res) => {
   try {
     const profile = await Profile.findById(req.params.id);
-    if (req.params.id === req.user.id) {
-    }
+    // if (req.params.id === req.user.id) {
+    // }
     // Check if the user has already upvoted
     if (
       profile.upvotes.some((upvote) => upvote.user.toString() === req.user.id)
     ) {
       return res.status(400).json({ msg: "User already upvoted" });
+    } else if (
+      profile.downvotes.some(
+        (downvote) => downvote.user.toString() === req.user.id
+      )
+    ) {
+      let i;
+      for (i = 0; i < profile.downvotes.length; i++) {
+        if (profile.downvotes[i].user.toString() === req.user.id) {
+          break;
+        }
+      }
+      profile.downvotes.splice(i, 1);
+      profile.upvotes.unshift({ user: req.user.id });
+      profile.totalVotes = profile.totalVotes + 2;
+    } else {
+      profile.upvotes.unshift({ user: req.user.id });
+      profile.totalVotes = profile.totalVotes + 1;
     }
-
-    profile.upvotes.unshift({ user: req.user.id });
-    profile.totalUpvotes = profile.totalUpvotes + 1;
 
     await profile.save();
 
-    return res.json(profile.totalUpvotes);
+    return res.json(profile);
   } catch (err) {
     console.error(err.message);
     res.status(500).send("Server Error");
   }
 });
 
+router.put("/downvote/:id", auth, checkObjectId("id"), async (req, res) => {
+  try {
+    const profile = await Profile.findById(req.params.id);
+    // if (req.params.id === req.user.id) {
+    // }
+    // Check if the user has already downvoted
+    console.log(req.params.id);
+    if (
+      profile.downvotes.some(
+        (downvote) => downvote.user.toString() === req.user.id
+      )
+    ) {
+      return res.status(400).json({ msg: "User already downvoted" });
+    } else if (
+      profile.upvotes.some((upvote) => upvote.user.toString() === req.user.id)
+    ) {
+      let i;
+      for (i = 0; i < profile.upvotes.length; i++) {
+        if (profile.upvotes[i].user.toString() === req.user.id) {
+          break;
+        }
+      }
+      profile.upvotes.splice(i, 1);
+      profile.downvotes.unshift({ user: req.user.id });
+      profile.totalVotes = profile.totalVotes - 2;
+    } else {
+      profile.downvotes.unshift({ user: req.user.id });
+      profile.totalVotes = profile.totalVotes - 1;
+    }
+
+    await profile.save();
+
+    return res.json(profile);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
 module.exports = router;

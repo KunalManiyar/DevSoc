@@ -4,9 +4,6 @@ const config = require("config");
 module.exports = function (req, res, next) {
   // Get token from header
   const token = req.header("x-auth-token");
-  console.log("In auth");
-  console.log(token);
-  console.log("Out auth");
   // Check if not token
   if (!token) {
     return res.status(401).json({ msg: "No token, authorization denied" });
@@ -19,8 +16,7 @@ module.exports = function (req, res, next) {
         return res.status(401).json({ msg: "Token is not valid" });
       } else {
         req.user = decoded.user;
-        console.log(req.user);
-        console.log("Out auth");
+
         next();
       }
     });

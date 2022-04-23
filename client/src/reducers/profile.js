@@ -5,15 +5,17 @@ import {
   UPDATE_PROFILE,
   GET_PROFILES,
   GET_REPOS,
-  NO_REPOS
-} from '../actions/types';
+  NO_REPOS,
+  UPDATE_VOTES,
+  VOTE_ERROR,
+} from "../actions/types";
 
 const initialState = {
   profile: null,
   profiles: [],
   repos: [],
   loading: true,
-  error: {}
+  error: {},
 };
 
 function profileReducer(state = initialState, action) {
@@ -25,37 +27,54 @@ function profileReducer(state = initialState, action) {
       return {
         ...state,
         profile: payload,
-        loading: false
+        loading: false,
       };
     case GET_PROFILES:
       return {
         ...state,
         profiles: payload,
-        loading: false
+        loading: false,
       };
     case PROFILE_ERROR:
       return {
         ...state,
         error: payload,
         loading: false,
-        profile: null
+        profile: null,
       };
     case CLEAR_PROFILE:
       return {
         ...state,
         profile: null,
-        repos: []
+        repos: [],
       };
     case GET_REPOS:
       return {
         ...state,
         repos: payload,
-        loading: false
+        loading: false,
       };
     case NO_REPOS:
       return {
         ...state,
-        repos: []
+        repos: [],
+      };
+    case UPDATE_VOTES:
+      console.log("Update_votes");
+      return {
+        ...state,
+        profiles: state.profiles.map((profile) =>
+          profile._id === payload.id
+            ? { ...profile, profile: payload.profile }
+            : profile
+        ),
+        loading: false,
+      };
+    case VOTE_ERROR:
+      return {
+        ...state,
+        error: payload,
+        loading: false,
       };
     default:
       return state;

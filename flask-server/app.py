@@ -32,10 +32,7 @@ userId = None
 @app.route('/test/<string:userProfileId>', methods=["POST"])
 def test(userProfileId):
     global userId
-    print("Hello")
     userId = json.loads(userProfileId)
-    print(type(userId))
-    print(userId)
     return json_util.dumps(userProfileId)
 
 
