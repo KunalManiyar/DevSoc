@@ -127,7 +127,7 @@ router.get("/", auth1, async (req, res) => {
   const userId = req.user.id;
   var userProfileId = await Profile.find({ user: userId }, { _id: 1 });
   userProfileId = userProfileId[0]["_id"];
-
+  console.log(userProfileId);
   try {
     const requ = new XMLHttpRequest();
     requ.open(
@@ -313,6 +313,7 @@ router.get("/github/:username", async (req, res) => {
     const uri = encodeURI(
       `https://api.github.com/users/${req.params.username}/repos?per_page=5&sort=created:asc`
     );
+
     const headers = {
       "user-agent": "node.js",
       Authorization: `token ${config.get("githubClientId")}`,

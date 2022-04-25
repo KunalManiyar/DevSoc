@@ -17,7 +17,6 @@ const ProfileItem = ({
     skills,
     totalVotes,
   },
-  showActions,
 }) => {
   useEffect(() => {
     getProfiles();
@@ -35,15 +34,16 @@ const ProfileItem = ({
         <Link to={`/profile/${_id}`} className="btn btn-primary">
           View Profile
         </Link>
-        {showActions && (
+        {
           <>
             <button
               onClick={() => upvote(profileId)}
               type="button"
               className="btn btn-light"
             >
-              <i className="fas fa-thumbs-up" /> <span>{totalVotes}</span>
+              <i className="fas fa-thumbs-up" />
             </button>
+            <span>{totalVotes}</span>
             <button
               onClick={() => downvote(profileId)}
               type="button"
@@ -52,7 +52,7 @@ const ProfileItem = ({
               <i className="fas fa-thumbs-down" />
             </button>
           </>
-        )}
+        }
       </div>
 
       <ul>

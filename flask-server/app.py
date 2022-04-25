@@ -33,6 +33,8 @@ userId = None
 def test(userProfileId):
     global userId
     userId = json.loads(userProfileId)
+    # print("new")
+    # print(userId)
     return json_util.dumps(userProfileId)
 
 
@@ -68,6 +70,7 @@ def get():
         skills = []
         experience = []
         education = []
+        votes = []
 
         # print(type(json.loads(response)[0]['user']['$oid']))
         for i in data:
@@ -75,22 +78,24 @@ def get():
             # print(i)
             # print(json.loads(json_util.dumps(i))
             #       ['user']['$oid'])
+            # print(data)
 
             id2.append(json.loads(json_util.dumps(i))
                        ['_id']['$oid'])
 
             skills.append(listToString(i["skills"]))
             # print(i["experience"])
+            votes.append(i['totalVotes'])
             if(i["experience"]):
                 experience.append(listToString(i["experience"][0]["title"]))
             else:
                 experience.append(" ")
             education.append(listToString(i["education"]))
         # print(education)
-
+        print(votes)
         global dict
         dict = {"id2": id2, "skills": skills,
-                "experience": experience, "education": education}
+                "experience": experience, "education": education, "votes": votes}
         # global df
         df = pd.DataFrame(dict)
         df['SkillString'] = df['skills'].str.replace(',', '')
@@ -108,6 +113,7 @@ def get():
 
     def get_recommendations(id1):
         # id1 = str()
+        # print(id1)
         global id2
         global cosine
         global dict
@@ -122,10 +128,19 @@ def get():
             if(sortedDevs[i][0] == index):
                 del sortedDevs[i]
                 break
+        print(sortedDevs)
+        b = sortedDevs[0:10]
+        h = []
         for i in range(len(sortedDevs)):
             final.append(df.iloc[[sortedDevs[i][0]]].values.tolist()[
                          0][0])
-        return final
+        # print(df.iloc[[sortedDevs[0][0]]])
+        for i in range(len(final)):
+            h.append(df.iloc[[sortedDevs[i][0]]].values.tolist()[0][-1])
+        # print(h)
+        j = [final for _, final in sorted(zip(h, final), reverse=True)]
+        # print(j)
+        return j
 
     model(response)
 
