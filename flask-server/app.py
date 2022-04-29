@@ -90,7 +90,16 @@ def get():
                 experience.append(listToString(i["experience"][0]["title"]))
             else:
                 experience.append(" ")
-            education.append(listToString(i["education"]))
+            if(i["education"]):
+
+                education.append(i["education"][0]["school"]+" " +
+
+                                 i["education"][0]["degree"] + " " +
+
+                                 i["education"][0]["fieldofstudy"])
+
+            else:
+                education.append(" ")
         # print(education)
         print(votes)
         global dict
