@@ -1,4 +1,4 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
@@ -20,8 +20,17 @@ const ProfileItem = ({
 }) => {
   useEffect(() => {
     getProfiles();
-  }, [upvote, downvote]);
-  console.log(profileId);
+  }, [upvote, downvote, totalVotes]);
+  console.log(totalVotes);
+  // const [votes, setVotes] = useState(totalVotes);
+  // const up = (profileId) => {
+  //   upvote(profileId);
+  //   setVotes(totalVotes);
+  // };
+  // const down = (profileId) => {
+  //   downvote(profileId);
+  //   setVotes(totalVotes);
+  // };
   return (
     <div className="profile bg-light">
       <img src={avatar} alt="" className="round-img" />

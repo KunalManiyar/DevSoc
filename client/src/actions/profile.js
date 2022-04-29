@@ -1,5 +1,5 @@
 import api from "../utils/api";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { setAlert } from "./alert";
 
 import {
@@ -238,14 +238,19 @@ export const deleteAccount = () => async (dispatch) => {
 // Upvotes
 export const upvote = (id) => async (dispatch) => {
   try {
-    console.log(id);
     const res = await api.put(`/profile/upvote/${id}`);
-    console.log(res.data);
     dispatch({
       type: UPDATE_VOTES,
       payload: { id, profile: res.data },
     });
+    dispatch(setAlert("Successfully upvoted", "success"));
   } catch (err) {
+    if (err.response.statusText === "Unauthorized") {
+      dispatch(setAlert("Login to upvote", "danger"));
+    } else {
+      dispatch(setAlert("Already upvoted", "danger"));
+    }
+
     dispatch({
       type: VOTE_ERROR,
       payload: { msg: err.response.statusText, status: err.response.status },
@@ -262,7 +267,13 @@ export const downvote = (id) => async (dispatch) => {
       type: UPDATE_VOTES,
       payload: { id, profile: res.data },
     });
+    dispatch(setAlert("Successfully downvoted", "success"));
   } catch (err) {
+    if (err.response.statusText === "Unauthorized") {
+      dispatch(setAlert("Login to downvote", "danger"));
+    } else {
+      dispatch(setAlert("Already downvoted", "danger"));
+    }
     dispatch({
       type: VOTE_ERROR,
       payload: { msg: err.response.statusText, status: err.response.status },
